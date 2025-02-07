@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import useWeeks from "@/app/hooks/useWeeks";
+import useWeeks from "../../hooks/useWeeks";
 
 export default function EditWeekModal({ week, setIsModalOpen, fetchWeeks }) {
     const { updateWeek } = useWeeks();

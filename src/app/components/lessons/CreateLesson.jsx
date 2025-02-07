@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import useLessons from "@/app/hooks/useLessons";
+import useLessons from "../../hooks/useLessons";
 
 export default function CreateLesson() {
     const { createLesson, loading, error, success } = useLessons();

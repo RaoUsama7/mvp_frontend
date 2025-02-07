@@ -1,6 +1,6 @@
 'use client'
 import { useState } from "react";
-import useCreateWeek from "@/app/hooks/useWeeks";
+import useCreateWeek from "../../hooks/useWeeks";
 
 export default function CreateWeek() {
 

@@ -1,6 +1,6 @@
 "use client";
 
-import useWeeks from "@/app/hooks/useWeeks";
+import useWeeks from "../../hooks/useWeeks";
 
 export default function DeleteWeekButton({ weekId, fetchWeeks }) {
     const { deleteWeek } = useWeeks();

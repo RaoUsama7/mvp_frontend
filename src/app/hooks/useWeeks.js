@@ -15,15 +15,14 @@ const useWeeks = () => {
   const token =
     'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2N2ExM2IxN2IwMDgxZDI1MjRlNGRlM2MiLCJlbWFpbCI6InJhb3J2cDIwQGdtYWlsLmNvbSIsImlhdCI6MTczODk0MzcxMywiZXhwIjoxNzM5NTQ4NTEzfQ.R4yC3IDUOydD_YiVv9JPSgCC6MB9wX4sAGf-zL-_yNw';
 
-const fetchWeeks = async (page = 1) => {
+const fetchWeeks = async (page = 1, initial = true) => {
   setLoading(true);
   setError(null);
-
   try {
     console.log('Fetching page:', page); // Debugging
 
     const response = await fetch(
-      `http://localhost:4000/weeks?page=${Number(page)}`,
+      `http://localhost:4000/weeks/all`,
       {
         method: 'GET',
         headers: {
@@ -38,7 +37,12 @@ const fetchWeeks = async (page = 1) => {
     const data = await response.json();
     console.log('Fetched Data:', data); // Debugging API response
 
-    setWeeks(data);
+    setWeeks(data.weeks);
+    setPagination({
+      totalWeeks: data.totalWeeks,
+      currentPage: page,
+      totalPages: Math.ceil(data.totalWeeks / data.weeksPerPage),
+    });
   } catch (err) {
     setError(err.message);
   } finally {
