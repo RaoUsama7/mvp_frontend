@@ -5,7 +5,7 @@ import GetActivities from '../components/activities/GetActivities';
 
 const ActivitiesPage = () => {
     return (
-        <div className="container mx-auto p-4">
+        <div className="auto">
             <CreateActivity />
             <GetActivities />
         </div>
