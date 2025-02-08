@@ -41,14 +41,7 @@ const GetActivities = () => {
                                             </div>
                                         </div>
                                     </div>
-                                    <div className="space-x-2">
-                                        <button
-                                            onClick={() => handleDelete(activity.id)}
-                                            className="bg-orange-500 text-white px-3 py-1 rounded hover:bg-orange-600 transition"
-                                        >
-                                            Edit
-                                        </button>
-
+                                    <div className="space-x-2">                                    
                                         <button
                                             onClick={() => handleDelete(activity.id)}
                                             className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 transition"
