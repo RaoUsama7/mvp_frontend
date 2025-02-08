@@ -2,18 +2,15 @@
 
 import { useState } from "react";
 import useLessons from "../../hooks/useLessons";
+import EditLessonModal from "./EditLessonModal";
 
 export default function LessonsList() {
     const { lessons, loading, error, fetchLessons, deleteLesson } = useLessons();
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedLesson, setSelectedLesson] = useState(null);
-    const [updatedTitle, setUpdatedTitle] = useState("");
-    const [updatedTime, setUpdatedTime] = useState("");
 
     const openModal = (lesson) => {
         setSelectedLesson(lesson);
-        setUpdatedTitle(lesson.title);
-        setUpdatedTime(lesson.timeRequired);
         setIsModalOpen(true);
     };
 
@@ -101,10 +98,12 @@ export default function LessonsList() {
             </div>
 
             {/* Edit Modal */}
-            {isModalOpen && (
-                <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-                    {/* ...existing modal code... */}
-                </div>
+            {isModalOpen && selectedLesson && (
+                <EditLessonModal 
+                    lesson={selectedLesson}
+                    setIsModalOpen={setIsModalOpen}
+                    fetchLessons={fetchLessons}
+                />
             )}
         </div>
     );

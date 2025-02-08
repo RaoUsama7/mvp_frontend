@@ -95,28 +95,38 @@ const useLessons = () => {
     setSuccess(null);
 
     try {
-      const response = await fetch(
-        `https://www.talkietotz.com/lessons/${lessonId}`,
-        {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify(updatedData),
+        // Send only the fields that work in Postman
+        const requestBody = {
+            title: updatedData.title,
+            time_required: updatedData.time_required,
+            core: updatedData.core
+        };
+
+        const response = await fetch(
+            `https://www.talkietotz.com/lessons/${lessonId}`,
+            {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${token}`,
+                },
+                body: JSON.stringify(requestBody),
+            }
+        );
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.message || 'Failed to update lesson');
         }
-      );
 
-      if (!response.ok) throw new Error('Failed to update lesson');
-
-      const data = await response.json();
-      setSuccess('Lesson updated successfully!');
-      fetchLessons();
-      return data;
+        const data = await response.json();
+        setSuccess('Lesson updated successfully!');
+        return data;
     } catch (err) {
-      setError(err.message);
+        setError(err.message);
+        throw err;
     } finally {
-      setLoading(false);
+        setLoading(false);
     }
   };
 
