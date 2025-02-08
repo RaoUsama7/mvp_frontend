@@ -119,22 +119,7 @@ export default function Week() {
                 </button>
             </div>
 
-            {/* Weeks List */}
-            <div className="w-full max-w-4xl">
-                {Array.isArray(weeks) && weeks.map((week) => (
-                    <ClientSideWeek
-                        key={week?._id || 'temp-key'}
-                        week={week}
-                        formattedDates={formattedDates}
-                        onEdit={(w) => {
-                            setSelectedWeek(w);
-                            setIsEditModalOpen(true);
-                        }}
-                        onDelete={fetchWeeks}
-                    />
-                ))}
-            </div>
-
+            
             {/* Create Week Modal */}
             {isModalOpen && (
                 <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">

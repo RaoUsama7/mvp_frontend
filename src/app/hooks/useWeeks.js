@@ -15,12 +15,10 @@ const useWeeks = () => {
   const token =
     'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2N2ExM2IxN2IwMDgxZDI1MjRlNGRlM2MiLCJlbWFpbCI6InJhb3J2cDIwQGdtYWlsLmNvbSIsImlhdCI6MTczODk0MzcxMywiZXhwIjoxNzM5NTQ4NTEzfQ.R4yC3IDUOydD_YiVv9JPSgCC6MB9wX4sAGf-zL-_yNw';
 
-const fetchWeeks = async (page = 1, initial = true) => {
+const fetchWeeks = async (page = 1) => {
   setLoading(true);
   setError(null);
   try {
-    console.log('Fetching page:', page); // Debugging
-
     const response = await fetch(
       `http://localhost:4000/weeks/all`,
       {
@@ -35,14 +33,8 @@ const fetchWeeks = async (page = 1, initial = true) => {
     if (!response.ok) throw new Error('Failed to fetch weeks');
 
     const data = await response.json();
-    console.log('Fetched Data:', data); // Debugging API response
-
-    setWeeks(data.weeks);
-    setPagination({
-      totalWeeks: data.totalWeeks,
-      currentPage: page,
-      totalPages: Math.ceil(data.totalWeeks / data.weeksPerPage),
-    });
+    console.log('Fetched Data:', data); // For debugging
+    setWeeks(data); // Set the entire array directly
   } catch (err) {
     setError(err.message);
   } finally {
@@ -135,7 +127,7 @@ const fetchWeeks = async (page = 1, initial = true) => {
     setLoading(true);
     setError(null);
     setSuccess(null);
-
+    console.log('weekId:', weekId); // For debugging
     try {
       const response = await fetch(`http://localhost:4000/weeks/${weekId}`, {
         method: 'DELETE',
