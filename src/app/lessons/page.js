@@ -1,12 +1,13 @@
-import CreateLesson from '../components/lessons/CreateLesson';
+import Lesson from '../components/lessons/Lesson';
 import LessonsList from '../components/lessons/GetLessons';
 
-const Weeks = () => {
+const Lessons = () => {
   return (
     <div>
-      <CreateLesson />
+      <Lesson />
       <LessonsList />
     </div>
   );
 };
-export default Weeks;
+
+export default Lessons;
