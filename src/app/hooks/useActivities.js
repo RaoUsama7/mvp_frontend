@@ -15,7 +15,7 @@ const useActivities = () => {
     setError(null);
 
     try {
-      const response = await fetch('http://localhost:4000/activities', {
+      const response = await fetch('https://www.talkietotz.com/activities', {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -40,7 +40,7 @@ const useActivities = () => {
 
     try {
       const response = await fetch(
-        `http://localhost:4000/activities/${activityId}`,
+        `https://www.talkietotz.com/activities/${activityId}`,
         {
           method: 'GET',
           headers: {
@@ -67,7 +67,7 @@ const useActivities = () => {
     setSuccess(null);
 
     try {
-      const response = await fetch('http://localhost:4000/activities', {
+      const response = await fetch('https://www.talkietotz.com/activities', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -96,7 +96,7 @@ const useActivities = () => {
 
     try {
       const response = await fetch(
-        `http://localhost:4000/activities/${activityId}`,
+        `https://www.talkietotz.com/activities/${activityId}`,
         {
           method: 'PUT',
           headers: {
@@ -127,7 +127,7 @@ const useActivities = () => {
 
     try {
       const response = await fetch(
-        `http://localhost:4000/activities/${activityId}`,
+        `https://www.talkietotz.com/activities/${activityId}`,
         {
           method: 'DELETE',
           headers: {

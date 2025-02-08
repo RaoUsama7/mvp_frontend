@@ -44,6 +44,7 @@ export default function Lesson() {
     const [timeRequired, setTimeRequired] = useState("");
     const [activities, setActivities] = useState([]);
     const [isMounted, setIsMounted] = useState(false);
+    const [core, setCore] = useState(false); // Add core state
 
     // Add useEffect to fetch weeks when component mounts
     useEffect(() => {
@@ -56,17 +57,30 @@ export default function Lesson() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        await createLesson({
+
+        if (!title || !weekId || !timeRequired) {
+            alert("Title, week, and time required are mandatory fields");
+            return;
+        }
+
+        const lessonData = {
             title,
-            weekId,
-            timeRequired: parseInt(timeRequired),
-            activities
-        });
+            week: weekId, // Changed from weekId to week to match API
+            activities: [],
+            time_required: parseInt(timeRequired), // Changed from timeRequired to time_required
+            core
+        };
+
+        console.log('Submitting lesson:', lessonData); // For debugging
+
+        await createLesson(lessonData);
         setIsModalOpen(false);
+        // Reset form
         setTitle("");
         setWeekId("");
         setTimeRequired("");
         setActivities([]);
+        setCore(false);
     };
 
     if (!isMounted) {
@@ -124,8 +138,38 @@ export default function Lesson() {
                                     onChange={(e) => setTimeRequired(e.target.value)}
                                     className="w-full border rounded-lg p-2"
                                     required
+                                    min="1"
                                 />
                             </div>
+
+                            <div>
+                                <label className="block font-medium mb-1">Lesson Type</label>
+                                <div className="flex gap-4">
+                                    <div className="flex items-center">
+                                        <input
+                                            type="radio"
+                                            id="core-true"
+                                            name="core"
+                                            checked={core === true}
+                                            onChange={() => setCore(true)}
+                                            className="mr-2"
+                                        />
+                                        <label htmlFor="core-true">Core Lesson</label>
+                                    </div>
+                                    <div className="flex items-center">
+                                        <input
+                                            type="radio"
+                                            id="core-false"
+                                            name="core"
+                                            checked={core === false}
+                                            onChange={() => setCore(false)}
+                                            className="mr-2"
+                                        />
+                                        <label htmlFor="core-false">Optional Lesson</label>
+                                    </div>
+                                </div>
+                            </div>
+                            
                             <div className="flex justify-end gap-2">
                                 <button
                                     type="button"

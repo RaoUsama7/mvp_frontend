@@ -15,7 +15,7 @@ const useLessons = () => {
     setError(null);
 
     try {
-      const response = await fetch('http://localhost:4000/lessons', {
+      const response = await fetch('https://www.talkietotz.com/lessons', {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -40,7 +40,7 @@ const useLessons = () => {
 
     try {
       const response = await fetch(
-        `http://localhost:4000/lessons/${lessonId}`,
+        `https://www.talkietotz.com/lessons/${lessonId}`,
         {
           method: 'GET',
           headers: {
@@ -67,7 +67,7 @@ const useLessons = () => {
     setSuccess(null);
 
     try {
-      const response = await fetch('http://localhost:4000/lessons', {
+      const response = await fetch('https://www.talkietotz.com/lessons', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -96,7 +96,7 @@ const useLessons = () => {
 
     try {
       const response = await fetch(
-        `http://localhost:4000/lessons/${lessonId}`,
+        `https://www.talkietotz.com/lessons/${lessonId}`,
         {
           method: 'PUT',
           headers: {
@@ -127,7 +127,7 @@ const useLessons = () => {
 
     try {
       const response = await fetch(
-        `http://localhost:4000/lessons/${lessonId}`,
+        `https://www.talkietotz.com/lessons/${lessonId}`,
         {
           method: 'DELETE',
           headers: {

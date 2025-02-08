@@ -20,16 +20,16 @@ export default function CreateLesson() {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        if (!title.trim() || !week || !timeRequired.trim()) {
+        if (!title.trim() || !week || !timeRequired) {
             alert("All fields are required.");
             return;
         }
 
         const lessonData = {
             title: title.trim(),
-            week: week,
+            week: week, // Changed from weekId to week
             activities: activities.filter(a => a.trim() !== ""),
-            time_required: Number(timeRequired) || 0,
+            time_required: parseInt(timeRequired), // Changed from timeRequired to time_required
             core: core
         };
 
@@ -73,7 +73,7 @@ export default function CreateLesson() {
                 </div>
 
                 <div>
-                    <label className="block font-medium mb-1">Week</label>
+                    <label className="block font-medium mb-1">Select Week</label>
                     <select
                         value={week}
                         onChange={(e) => setWeek(e.target.value)}
@@ -81,7 +81,7 @@ export default function CreateLesson() {
                         required
                     >
                         <option value="">Select a week...</option>
-                        {weeks.map((weekItem) => (
+                        {weeks?.map((weekItem) => (
                             <option key={weekItem.id} value={weekItem.id}>
                                 Week {weekItem.number}: {weekItem.theme}
                             </option>
@@ -110,18 +110,38 @@ export default function CreateLesson() {
                         onChange={(e) => setTimeRequired(e.target.value)}
                         className="w-full border rounded-lg p-2 focus:ring focus:ring-blue-300"
                         required
+                        min="1" // Ensure positive numbers only
                     />
                 </div>
 
-                <div className="flex items-center space-x-2">
-                    <input
-                        type="checkbox"
-                        id="core"
-                        checked={core}
-                        onChange={(e) => setCore(e.target.checked)}
-                        className="rounded border-gray-300 text-blue-500 focus:ring-blue-500"
-                    />
-                    <label htmlFor="core" className="font-medium">Core Lesson</label>
+                <div className="space-y-2">
+                    <label className="block font-medium mb-1">Lesson Type</label>
+                    <div className="flex gap-4">
+                        <div className="flex items-center">
+                            <input
+                                type="radio"
+                                id="core-true"
+                                name="core"
+                                value="true"
+                                checked={core === true}
+                                onChange={(e) => setCore(e.target.value === "true")}
+                                className="mr-2"
+                            />
+                            <label htmlFor="core-true">Core Lesson</label>
+                        </div>
+                        <div className="flex items-center">
+                            <input
+                                type="radio"
+                                id="core-false"
+                                name="core"
+                                value="false"
+                                checked={core === false}
+                                onChange={(e) => setCore(e.target.value === "true")}
+                                className="mr-2"
+                            />
+                            <label htmlFor="core-false">Optional Lesson</label>
+                        </div>
+                    </div>
                 </div>
 
                 <button

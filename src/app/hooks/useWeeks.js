@@ -20,7 +20,7 @@ const fetchWeeks = async (page = 1) => {
   setError(null);
   try {
     const response = await fetch(
-      `http://localhost:4000/weeks/all`,
+      `https://www.talkietotz.com/weeks/all`,
       {
         method: 'GET',
         headers: {
@@ -48,7 +48,7 @@ const fetchWeeks = async (page = 1) => {
     setError(null);
 
     try {
-      const response = await fetch(`http://localhost:4000/weeks/${weekId}`, {
+      const response = await fetch(`https://www.talkietotz.com/weeks/${weekId}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -73,7 +73,7 @@ const fetchWeeks = async (page = 1) => {
     setSuccess(null);
 
     try {
-      const response = await fetch('http://localhost:4000/weeks', {
+      const response = await fetch('https://www.talkietotz.com/weeks', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -101,7 +101,7 @@ const fetchWeeks = async (page = 1) => {
     setSuccess(null);
 
     try {
-      const response = await fetch(`http://localhost:4000/weeks/${weekId}`, {
+      const response = await fetch(`https://www.talkietotz.com/weeks/${weekId}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -129,7 +129,7 @@ const fetchWeeks = async (page = 1) => {
     setSuccess(null);
     console.log('weekId:', weekId); // For debugging
     try {
-      const response = await fetch(`http://localhost:4000/weeks/${weekId}`, {
+      const response = await fetch(`https://www.talkietotz.com/weeks/${weekId}`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
@@ -186,7 +186,7 @@ export default useWeeks;
 //     setError(null);
 
 //     try {
-//       const response = await fetch('http://localhost:4000/weeks', {
+//       const response = await fetch('https://www.talkietotz.com/weeks', {
 //         method: 'GET',
 //         headers: {
 //           'Content-Type': 'application/json',
@@ -210,7 +210,7 @@ export default useWeeks;
 //     setError(null);
 
 //     try {
-//       const response = await fetch(`http://localhost:4000/weeks/${weekId}`, {
+//       const response = await fetch(`https://www.talkietotz.com/weeks/${weekId}`, {
 //         method: 'GET',
 //         headers: {
 //           'Content-Type': 'application/json',
@@ -235,7 +235,7 @@ export default useWeeks;
 //     setSuccess(null);
 
 //     try {
-//       const response = await fetch('http://localhost:4000/weeks', {
+//       const response = await fetch('https://www.talkietotz.com/weeks', {
 //         method: 'POST',
 //         headers: {
 //           'Content-Type': 'application/json',
@@ -263,7 +263,7 @@ export default useWeeks;
 //     setSuccess(null);
 
 //     try {
-//       const response = await fetch(`http://localhost:4000/weeks/${weekId}`, {
+//       const response = await fetch(`https://www.talkietotz.com/weeks/${weekId}`, {
 //         method: 'PUT',
 //         headers: {
 //           'Content-Type': 'application/json',
@@ -291,7 +291,7 @@ export default useWeeks;
 //     setSuccess(null);
 
 //     try {
-//       const response = await fetch(`http://localhost:4000/weeks/${weekId}`, {
+//       const response = await fetch(`https://www.talkietotz.com/weeks/${weekId}`, {
 //         method: 'DELETE',
 //         headers: {
 //           'Content-Type': 'application/json',

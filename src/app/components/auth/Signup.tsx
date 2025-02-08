@@ -27,7 +27,7 @@ const Signup = () => {
     }
 
     try {
-      const response = await axios.post('http://localhost:4000/auth/register', {
+      const response = await axios.post('https://www.talkietotz.com/auth/register', {
         email,
         password,
         name,

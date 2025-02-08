@@ -16,6 +16,9 @@ const Sidebar = ({ setActiveComponent, activeComponent, isCollapsed, toggleSideb
     { name: 'Dashboard', icon: FiHome },
     { name: 'Weeks', icon: FiFolder },
     { name: 'Lessons', icon: FiFolder },
+    { name: 'Activities', icon: FiFolder },
+    { name: 'Settings', icon: FiSettings },
+    { name: 'Logout', icon: FiLogOut },
   ];
 
   const handleItemClick = (itemName) => {
