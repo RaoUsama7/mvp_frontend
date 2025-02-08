@@ -148,7 +148,7 @@ export default function Week() {
                                 />
                             </div>
 
-                            <h3 className="text-lg font-semibold">Lessons</h3>
+                            {/* <h3 className="text-lg font-semibold">Lessons</h3>
                             {lessons.map((lesson, lessonIndex) => (
                                 <div key={lessonIndex} className="border p-4 rounded-lg space-y-3">
                                     <input
@@ -213,15 +213,15 @@ export default function Week() {
                                         </div>
                                     ))}
                                 </div>
-                            ))}
-
+                            ))} */}
+{/* 
                             <button
                                 type="button"
                                 onClick={addLesson}
                                 className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600"
                             >
                                 Add Lesson
-                            </button>
+                            </button> */}
 
                             <div className="flex justify-end gap-2 mt-4">
                                 <button
