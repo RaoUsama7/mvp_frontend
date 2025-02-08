@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import useLessons from "../../hooks/useLessons";
+import useWeeks from "../../hooks/useWeeks"; // Add this import
 import EditLessonModal from "./EditLessonModal";
 import DeleteLessonButton from "./DeleteLessonModal";
 
@@ -32,6 +33,8 @@ const ClientSideLesson = ({ lesson, onEdit, onDelete }) => (
 );
 
 export default function Lesson() {
+    // Add weeks hook
+    const { weeks = [], fetchWeeks } = useWeeks();
     const { lessons = [], fetchLessons, createLesson, loading, error, success } = useLessons();
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -41,6 +44,11 @@ export default function Lesson() {
     const [timeRequired, setTimeRequired] = useState("");
     const [activities, setActivities] = useState([]);
     const [isMounted, setIsMounted] = useState(false);
+
+    // Add useEffect to fetch weeks when component mounts
+    useEffect(() => {
+        fetchWeeks();
+    }, []);
 
     useEffect(() => {
         setIsMounted(true);
@@ -82,7 +90,6 @@ export default function Lesson() {
                     <div className="bg-white p-6 rounded-lg shadow-lg w-[600px] max-h-[80vh] overflow-y-auto">
                         <h2 className="text-xl font-bold mb-4">Create a New Lesson</h2>
                         <form onSubmit={handleSubmit} className="space-y-4">
-                            {/* Form fields similar to CreateLesson component */}
                             <div>
                                 <label className="block font-medium mb-1">Title</label>
                                 <input
@@ -94,14 +101,20 @@ export default function Lesson() {
                                 />
                             </div>
                             <div>
-                                <label className="block font-medium mb-1">Week ID</label>
-                                <input
-                                    type="text"
+                                <label className="block font-medium mb-1">Select Week</label>
+                                <select
                                     value={weekId}
                                     onChange={(e) => setWeekId(e.target.value)}
                                     className="w-full border rounded-lg p-2"
                                     required
-                                />
+                                >
+                                    <option value="">Select a week...</option>
+                                    {weeks.map((week) => (
+                                        <option key={week.id} value={week.id}>
+                                            Week {week.number}: {week.theme}
+                                        </option>
+                                    ))}
+                                </select>
                             </div>
                             <div>
                                 <label className="block font-medium mb-1">Time Required (minutes)</label>
@@ -134,6 +147,19 @@ export default function Lesson() {
                 </div>
             )}
 
+            {/* <div className="w-full max-w-4xl">
+                {Array.isArray(lessons) && lessons.map((lesson) => (
+                    <ClientSideLesson
+                        key={lesson?.id}
+                        lesson={lesson}
+                        onEdit={(l) => {
+                            setSelectedLesson(l);
+                            setIsEditModalOpen(true);
+                        }}
+                        onDelete={fetchLessons}
+                    />
+                ))}
+            </div> */}
 
             {isEditModalOpen && selectedLesson && (
                 <EditLessonModal

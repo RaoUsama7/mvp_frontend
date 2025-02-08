@@ -15,11 +15,22 @@ const Sidebar = ({ setActiveComponent, activeComponent, isCollapsed, toggleSideb
   const menuItems = [
     { name: 'Dashboard', icon: FiHome },
     { name: 'Weeks', icon: FiFolder },
+    { name: 'Lessons', icon: FiFolder },
   ];
 
   const handleItemClick = (itemName) => {
     if (itemName === 'Weeks') {
       router.push('/weeks');
+    } else {
+      setActiveComponent(itemName);
+    }
+    if (itemName === 'Lessons') {
+      router.push('/lessons');
+    } else {
+      setActiveComponent(itemName);
+    }
+    if (itemName === 'Activities') {
+      router.push('/activities');
     } else {
       setActiveComponent(itemName);
     }

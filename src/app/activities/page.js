@@ -1,14 +1,15 @@
-import CreateWeek from '../components/weeks/CreateWeek';
-import WeeksList from '../components/weeks/GetWeeks';
-import Week from '../components/weeks/Week';
-const Weeks = () => {
-  return (
-    <div>
-      {/* <CreateWeek />
-       */}
-      <Week />
-      <WeeksList />
-    </div>
-  );
+"use client";
+
+import CreateActivity from '../components/activities/CreateActivity';
+import GetActivities from '../components/activities/GetActivities';
+
+const ActivitiesPage = () => {
+    return (
+        <div className="container mx-auto p-4">
+            <CreateActivity />
+            <GetActivities />
+        </div>
+    );
 };
-export default Weeks;
+
+export default ActivitiesPage;
