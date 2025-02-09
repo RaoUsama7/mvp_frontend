@@ -2,15 +2,23 @@
 
 import { useState } from "react";
 import useActivities from "../../hooks/useActivities";
+import EditActivityModal from "./EditActivityModal";
 
 const GetActivities = () => {
     const { activities, loading, error, deleteActivity, fetchActivities } = useActivities();
+    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+    const [selectedActivity, setSelectedActivity] = useState(null);
 
     const handleDelete = async (activityId) => {
         if (confirm("Are you sure you want to delete this activity?")) {
             await deleteActivity(activityId);
-            await fetchActivities(); // Refresh the list after deletion
+            await fetchActivities();
         }
+    };
+
+    const openEditModal = (activity) => {
+        setSelectedActivity(activity);
+        setIsEditModalOpen(true);
     };
 
     return (
@@ -66,12 +74,20 @@ const GetActivities = () => {
                                         </div>
                                     </td>
                                     <td className="border p-2">
-                                        <button
-                                            onClick={() => handleDelete(activity.id)}
-                                            className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 transition"
-                                        >
-                                            Delete
-                                        </button>
+                                        <div className="flex gap-2">
+                                            <button
+                                                onClick={() => openEditModal(activity)}
+                                                className="bg-yellow-500 text-white px-2 py-1 rounded hover:bg-yellow-600"
+                                            >
+                                                Edit
+                                            </button>
+                                            <button
+                                                onClick={() => handleDelete(activity.id)}
+                                                className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600"
+                                            >
+                                                Delete
+                                            </button>
+                                        </div>
                                     </td>
                                 </tr>
                             ))
@@ -83,6 +99,15 @@ const GetActivities = () => {
                     </tbody>
                 </table>
             </div>
+
+            {/* Edit Modal */}
+            {isEditModalOpen && selectedActivity && (
+                <EditActivityModal 
+                    activity={selectedActivity}
+                    setIsModalOpen={setIsEditModalOpen}
+                    fetchActivities={fetchActivities}
+                />
+            )}
         </div>
     );
 };
