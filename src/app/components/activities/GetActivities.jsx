@@ -16,14 +16,8 @@ const GetActivities = () => {
         }
     };
 
-    const openEditModal = (activity) => {
-        setSelectedActivity(activity);
-        setIsEditModalOpen(true);
-    };
-
     return (
         <div className="flex flex-col items-center min-h-screen bg-gray-100 p-6">
-            <h2 className="text-2xl font-bold mb-4">Activities List</h2>
             <button
                 onClick={fetchActivities}
                 className="mb-4 bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition"
@@ -39,10 +33,10 @@ const GetActivities = () => {
                     <thead>
                         <tr className="bg-gray-200">
                             <th className="border p-2 text-left">Name</th>
-                            <th className="border p-2 text-left">Week Info</th>
-                            <th className="border p-2 text-left">Lesson Info</th>
+                            <th className="border p-2 text-left">Module</th>
+                            <th className="border p-2 text-left">Week</th>
+                            <th className="border p-2 text-left">Lesson</th>
                             <th className="border p-2 text-left">Time (mins)</th>
-                            <th className="border p-2 text-left">Keywords</th>
                             <th className="border p-2 text-left">Actions</th>
                         </tr>
                     </thead>
@@ -51,32 +45,24 @@ const GetActivities = () => {
                             activities.map((activity) => (
                                 <tr key={activity.id} className="border-t">
                                     <td className="border p-2">{activity.name}</td>
+                                    <td className="border p-2">Module {activity.lesson?.week?.module_number}</td>
                                     <td className="border p-2">
-                                        {activity.lesson?.week ? (
-                                            <>
-                                                Week {activity.lesson.week.number}: {activity.lesson.week.theme}
-                                            </>
-                                        ) : (
-                                            'No week assigned'
-                                        )}
+                                        Week {activity.lesson?.week?.week_number}: {activity.lesson?.week?.theme}
                                     </td>
                                     <td className="border p-2">
-                                        {activity.lesson ? activity.lesson.title : 'No lesson assigned'}
+                                        {activity.lesson?.title}
+                                        <span className={`ml-2 px-2 py-1 rounded text-sm ${activity.lesson?.core ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}`}>
+                                            {activity.lesson?.core ? 'Core' : 'Optional'}
+                                        </span>
                                     </td>
                                     <td className="border p-2">{activity.timeRequired}</td>
                                     <td className="border p-2">
                                         <div className="flex gap-2">
-                                            {activity.keywords?.map((keyword, index) => (
-                                                <span key={index} className="bg-gray-200 px-2 py-1 rounded">
-                                                    {keyword}
-                                                </span>
-                                            ))}
-                                        </div>
-                                    </td>
-                                    <td className="border p-2">
-                                        <div className="flex gap-2">
                                             <button
-                                                onClick={() => openEditModal(activity)}
+                                                onClick={() => {
+                                                    setSelectedActivity(activity);
+                                                    setIsEditModalOpen(true);
+                                                }}
                                                 className="bg-yellow-500 text-white px-2 py-1 rounded hover:bg-yellow-600"
                                             >
                                                 Edit
@@ -113,3 +99,4 @@ const GetActivities = () => {
 };
 
 export default GetActivities;
+

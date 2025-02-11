@@ -3,49 +3,110 @@
 import { useState, useEffect } from "react";
 import useActivities from "../../hooks/useActivities";
 import useLessons from "../../hooks/useLessons";
+import useWeeks from "../../hooks/useWeeks";
 
 const AddActivityButton = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const { createActivity, loading } = useActivities();
     const { lessons, fetchLessons } = useLessons();
-    const [name, setName] = useState("");
-    const [objective, setObjective] = useState("");
-    const [keywords, setKeywords] = useState([]);
-    const [instructions, setInstructions] = useState("");
-    const [timeRequired, setTimeRequired] = useState("");
-    const [materials, setMaterials] = useState([{ title: "", link: "" }]);
-    const [lessonId, setLessonId] = useState("");
+    const { weeks, fetchWeeks } = useWeeks();
+
+    // States for form data
+    const [formData, setFormData] = useState({
+        name: "",
+        meaning: "",
+        objective: "",
+        description: "",
+        instructions: "",
+        timeRequired: "",
+        materials: "",
+        lessonId: ""
+    });
+
+    // States for cascading dropdowns
+    const [selectedModule, setSelectedModule] = useState("");
+    const [selectedWeek, setSelectedWeek] = useState("");
+    const [modules, setModules] = useState([]);
+    const [filteredWeeks, setFilteredWeeks] = useState([]);
+    const [filteredLessons, setFilteredLessons] = useState([]);
 
     useEffect(() => {
+        fetchWeeks();
         fetchLessons();
     }, []);
 
-    const openModal = () => setIsModalOpen(true);
-    const closeModal = () => setIsModalOpen(false);
+    // Extract unique modules from weeks
+    useEffect(() => {
+        if (weeks.length > 0) {
+            const uniqueModules = [...new Set(weeks.map(week => week.module_number))].sort((a, b) => a - b);
+            setModules(uniqueModules);
+        }
+    }, [weeks]);
+
+    // Filter weeks when module changes
+    useEffect(() => {
+        if (selectedModule && weeks.length > 0) {
+            const filtered = weeks.filter(week => week.module_number === parseInt(selectedModule));
+            setFilteredWeeks(filtered);
+            setSelectedWeek("");
+            setFormData(prev => ({ ...prev, lessonId: "" }));
+        }
+    }, [selectedModule]);
+
+    // Filter lessons when week changes
+    useEffect(() => {
+        if (selectedWeek && lessons.length > 0) {
+            const filtered = lessons.filter(lesson => lesson.weekId === selectedWeek);
+            setFilteredLessons(filtered);
+        }
+    }, [selectedWeek, lessons]);
+
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        setFormData(prev => ({
+            ...prev,
+            [name]: value
+        }));
+    };
+
+    const handleModuleChange = (e) => {
+        setSelectedModule(e.target.value);
+    };
+
+    const handleWeekChange = (e) => {
+        setSelectedWeek(e.target.value);
+    };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         const activityData = {
-            name: name.trim(),
-            objective: objective.trim(),
-            keywords: keywords.filter(k => k.trim() !== ""),
-            instructions: instructions.trim(),
-            timeRequired: Number(timeRequired),
-            materials: materials.filter(m => m.title.trim() !== "" && m.link.trim() !== ""),
-            lessonId: lessonId
+            name: formData.name.trim(),
+            meaning: formData.meaning.trim(),
+            objective: formData.objective.trim(),
+            description: formData.description.trim(),
+            instructions: formData.instructions.trim(),
+            timeRequired: parseInt(formData.timeRequired),
+            materials: formData.materials.trim(),
+            lessonId: formData.lessonId
         };
+
         try {
             const response = await createActivity(activityData);
-            if (response) {  // If creation was successful
-                setName("");
-                setObjective("");
-                setKeywords([]);
-                setInstructions("");
-                setTimeRequired("");
-                setMaterials([{ title: "", link: "" }]);
-                setLessonId("");
-                closeModal();
-                window.location.reload(); // Refresh the page after successful creation
+            if (response) {
+                setFormData({
+                    name: "",
+                    meaning: "",
+                    objective: "",
+                    description: "",
+                    instructions: "",
+                    timeRequired: "",
+                    materials: "",
+                    lessonId: ""
+                });
+                setSelectedModule("");
+                setSelectedWeek("");
+                setIsModalOpen(false);
+                window.location.reload();
             }
         } catch (err) {
             console.error("Error creating activity:", err);
@@ -57,7 +118,7 @@ const AddActivityButton = () => {
             <div className="flex justify-between items-center mb-4">
                 <h2 className="text-lg font-bold">Activities</h2>
                 <button
-                    onClick={openModal}
+                    onClick={() => setIsModalOpen(true)}
                     className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
                 >
                     Add New Activity
@@ -71,7 +132,7 @@ const AddActivityButton = () => {
                             <div className="flex justify-between items-center mb-4">
                                 <h2 className="text-2xl font-bold">Create New Activity</h2>
                                 <button 
-                                    onClick={closeModal} 
+                                    onClick={() => setIsModalOpen(false)} 
                                     className="text-gray-500 hover:text-gray-700"
                                 >
                                     ✕
@@ -83,55 +144,110 @@ const AddActivityButton = () => {
                                     <label className="block font-medium mb-1">Name</label>
                                     <input
                                         type="text"
-                                        value={name}
-                                        onChange={(e) => setName(e.target.value)}
+                                        name="name"
+                                        value={formData.name}
+                                        onChange={handleChange}
                                         className="w-full border rounded-lg p-2"
                                         required
                                     />
                                 </div>
 
                                 <div>
-                                    <label className="block font-medium mb-1">Lesson</label>
+                                    <label className="block font-medium mb-1">Module</label>
                                     <select
-                                        value={lessonId}
-                                        onChange={(e) => setLessonId(e.target.value)}
+                                        value={selectedModule}
+                                        onChange={handleModuleChange}
                                         className="w-full border rounded-lg p-2"
                                         required
                                     >
-                                        <option value="">Select a lesson...</option>
-                                        {lessons?.map((lesson) => (
-                                            <option key={lesson.id} value={lesson.id}>
-                                                {lesson.title}
+                                        <option value="">Select Module...</option>
+                                        {modules.map((module) => (
+                                            <option key={module} value={module}>
+                                                Module {module}
                                             </option>
                                         ))}
                                     </select>
                                 </div>
 
+                                {selectedModule && (
+                                    <div>
+                                        <label className="block font-medium mb-1">Week</label>
+                                        <select
+                                            value={selectedWeek}
+                                            onChange={handleWeekChange}
+                                            className="w-full border rounded-lg p-2"
+                                            required
+                                        >
+                                            <option value="">Select Week...</option>
+                                            {filteredWeeks.map((week) => (
+                                                <option key={week.id} value={week.id}>
+                                                    Week {week.week_number}: {week.theme}
+                                                </option>
+                                            ))}
+                                        </select>
+                                    </div>
+                                )}
+
+                                {selectedWeek && (
+                                    <div>
+                                        <label className="block font-medium mb-1">Lesson</label>
+                                        <select
+                                            name="lessonId"
+                                            value={formData.lessonId}
+                                            onChange={handleChange}
+                                            className="w-full border rounded-lg p-2"
+                                            required
+                                        >
+                                            <option value="">Select Lesson...</option>
+                                            {filteredLessons.map((lesson) => (
+                                                <option key={lesson.id} value={lesson.id}>
+                                                    {lesson.title} {lesson.core ? '(Core)' : '(Optional)'}
+                                                </option>
+                                            ))}
+                                        </select>
+                                    </div>
+                                )}
+
                                 <div>
-                                    <label className="block font-medium mb-1">Objective</label>
-                                    <textarea
-                                        value={objective}
-                                        onChange={(e) => setObjective(e.target.value)}
+                                    <label className="block font-medium mb-1">Meaning</label>
+                                    <input
+                                        type="text"
+                                        name="meaning"
+                                        value={formData.meaning}
+                                        onChange={handleChange}
                                         className="w-full border rounded-lg p-2"
                                         required
                                     />
                                 </div>
 
                                 <div>
-                                    <label className="block font-medium mb-1">Keywords (comma-separated)</label>
-                                    <input
-                                        type="text"
-                                        value={keywords.join(", ")}
-                                        onChange={(e) => setKeywords(e.target.value.split(",").map(k => k.trim()))}
+                                    <label className="block font-medium mb-1">Objective</label>
+                                    <textarea
+                                        name="objective"
+                                        value={formData.objective}
+                                        onChange={handleChange}
                                         className="w-full border rounded-lg p-2"
+                                        required
+                                    />
+                                </div>
+
+                                <div>
+                                    <label className="block font-medium mb-1">Description</label>
+                                    <textarea
+                                        name="description"
+                                        value={formData.description}
+                                        onChange={handleChange}
+                                        className="w-full border rounded-lg p-2"
+                                        required
                                     />
                                 </div>
 
                                 <div>
                                     <label className="block font-medium mb-1">Instructions</label>
                                     <textarea
-                                        value={instructions}
-                                        onChange={(e) => setInstructions(e.target.value)}
+                                        name="instructions"
+                                        value={formData.instructions}
+                                        onChange={handleChange}
                                         className="w-full border rounded-lg p-2"
                                         required
                                     />
@@ -141,66 +257,30 @@ const AddActivityButton = () => {
                                     <label className="block font-medium mb-1">Time Required (minutes)</label>
                                     <input
                                         type="number"
-                                        value={timeRequired}
-                                        onChange={(e) => setTimeRequired(e.target.value)}
+                                        name="timeRequired"
+                                        value={formData.timeRequired}
+                                        onChange={handleChange}
                                         className="w-full border rounded-lg p-2"
                                         required
+                                        min="1"
                                     />
                                 </div>
 
                                 <div>
                                     <label className="block font-medium mb-1">Materials</label>
-                                    {materials.map((material, index) => (
-                                        <div key={index} className="space-y-2 mb-2">
-                                            <input
-                                                type="text"
-                                                placeholder="Title"
-                                                value={material.title}
-                                                onChange={(e) => {
-                                                    const newMaterials = [...materials];
-                                                    newMaterials[index].title = e.target.value;
-                                                    setMaterials(newMaterials);
-                                                }}
-                                                className="w-full border rounded-lg p-2"
-                                            />
-                                            <input
-                                                type="url"
-                                                placeholder="Link"
-                                                value={material.link}
-                                                onChange={(e) => {
-                                                    const newMaterials = [...materials];
-                                                    newMaterials[index].link = e.target.value;
-                                                    setMaterials(newMaterials);
-                                                }}
-                                                className="w-full border rounded-lg p-2"
-                                            />
-                                            {index > 0 && (
-                                                <button
-                                                    type="button"
-                                                    onClick={() => {
-                                                        const newMaterials = materials.filter((_, i) => i !== index);
-                                                        setMaterials(newMaterials);
-                                                    }}
-                                                    className="text-red-500"
-                                                >
-                                                    Remove
-                                                </button>
-                                            )}
-                                        </div>
-                                    ))}
-                                    <button
-                                        type="button"
-                                        onClick={() => setMaterials([...materials, { title: "", link: "" }])}
-                                        className="text-blue-500"
-                                    >
-                                        Add Material
-                                    </button>
+                                    <textarea
+                                        name="materials"
+                                        value={formData.materials}
+                                        onChange={handleChange}
+                                        className="w-full border rounded-lg p-2"
+                                        required
+                                    />
                                 </div>
 
                                 <div className="flex justify-end gap-2">
                                     <button
                                         type="button"
-                                        onClick={closeModal}
+                                        onClick={() => setIsModalOpen(false)}
                                         className="bg-gray-400 text-white px-4 py-2 rounded hover:bg-gray-500"
                                     >
                                         Cancel
