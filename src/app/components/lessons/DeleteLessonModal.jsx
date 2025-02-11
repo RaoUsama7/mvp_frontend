@@ -6,7 +6,7 @@ export default function DeleteLessonButton({ lessonId, fetchLessons }) {
     const { deleteLesson } = useLessons();
 
     const handleDelete = async () => {
-        if (confirm("Are you sure you want to delete this lesson?")) {
+        if (confirm("Are you sure you want to delete this lesson? Deleting this lesson would delete all activities associated with it")) {
             await deleteLesson(lessonId);
             fetchLessons();
         }
