@@ -1,16 +1,41 @@
 'use client'
 import { useState } from "react";
-import useCreateWeek from "../../hooks/useWeeks";
+import useWeeks from "../../hooks/useWeeks";
 
 export default function CreateWeek() {
+    const { createWeek, loading, error, success } = useWeeks();
+    const [formData, setFormData] = useState({
+        theme: "",
+        module_number: "",
+        quarter: "",
+        lessons: []
+    });
 
-    const { createWeek, loading, error, success } = useCreateWeek();
-    const [theme, setTheme] = useState("Transport");
-    const [dateStart, setDateStart] = useState("2024-09-01T00:00:00.000Z");
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        setFormData(prev => ({
+            ...prev,
+            [name]: value
+        }));
+    };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        await createWeek({ lessons: [], theme, date_start: dateStart });
+        const dataToSubmit = {
+            ...formData,
+            module_number: parseInt(formData.module_number),
+            quarter: parseInt(formData.quarter),
+            lessons: []
+        };
+        await createWeek(dataToSubmit);
+        if (!error) {
+            setFormData({
+                theme: "",
+                module_number: "",
+                quarter: "",
+                lessons: []
+            });
+        }
     };
 
     return (
@@ -23,21 +48,38 @@ export default function CreateWeek() {
                         <label className="block font-medium mb-1">Theme</label>
                         <input
                             type="text"
-                            value={theme}
-                            onChange={(e) => setTheme(e.target.value)}
+                            name="theme"
+                            value={formData.theme}
+                            onChange={handleChange}
                             className="w-full border rounded-lg p-2 focus:ring focus:ring-blue-300"
                             required
                         />
                     </div>
 
                     <div>
-                        <label className="block font-medium mb-1">Start Date</label>
+                        <label className="block font-medium mb-1">Module Number</label>
                         <input
-                            type="datetime-local"
-                            value={dateStart}
-                            onChange={(e) => setDateStart(e.target.value)}
+                            type="number"
+                            name="module_number"
+                            value={formData.module_number}
+                            onChange={handleChange}
                             className="w-full border rounded-lg p-2 focus:ring focus:ring-blue-300"
                             required
+                            min="1"
+                        />
+                    </div>
+
+                    <div>
+                        <label className="block font-medium mb-1">Quarter</label>
+                        <input
+                            type="number"
+                            name="quarter"
+                            value={formData.quarter}
+                            onChange={handleChange}
+                            className="w-full border rounded-lg p-2 focus:ring focus:ring-blue-300"
+                            required
+                            min="1"
+                            max="4"
                         />
                     </div>
 
@@ -56,4 +98,5 @@ export default function CreateWeek() {
         </div>
     );
 }
+
 

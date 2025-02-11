@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import useWeeks from "../../hooks/useWeeks";
 import EditWeekModal from "./EditWeekModal";
 import DeleteWeekButton from "./DeleteWeekModal";
@@ -9,37 +9,11 @@ export default function WeeksList() {
     const { weeks, loading, error, fetchWeeks } = useWeeks();
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [selectedWeek, setSelectedWeek] = useState(null);
-    const [formattedDates, setFormattedDates] = useState({});
-    const [isMounted, setIsMounted] = useState(false);
-
-    useEffect(() => {
-        setIsMounted(true);
-    }, []);
-
-    useEffect(() => {
-        if (!weeks || !isMounted) return;
-        
-        const dates = {};
-        weeks.forEach(week => {
-            if (week?.id && week?.dateStart) {
-                try {
-                    dates[week.id] = new Date(week.dateStart).toLocaleDateString();
-                } catch (e) {
-                    dates[week.id] = 'Invalid date';
-                }
-            }
-        });
-        setFormattedDates(dates);
-    }, [weeks, isMounted]);
 
     const openEditModal = (week) => {
         setSelectedWeek(week);
         setIsEditModalOpen(true);
     };
-
-    if (!isMounted) {
-        return <div className="flex flex-col items-center bg-gray-100 p-6 w-full">Loading...</div>;
-    }
 
     return (
         <div className="flex flex-col items-center bg-gray-100 p-6 w-full">
@@ -59,9 +33,13 @@ export default function WeeksList() {
                 <table className="w-full border-collapse">
                     <thead>
                         <tr className="bg-gray-200">
-                            <th className="border p-2 text-left">Number</th>
+                            <th className="border p-2 text-left">Quarter</th>
+                            <th className="border p-2 text-left">Module Number</th>
+                            <th className="border p-2 text-left">Week Number</th>
                             <th className="border p-2 text-left">Theme</th>
-                            <th className="border p-2 text-left">Start Date</th>
+                            {/* <th className="border p-2 text-left">Module Focus</th> */}
+                            {/* <th className="border p-2 text-left">Skills</th> */}
+                            {/* <th className="border p-2 text-left">Keywords</th> */}
                             <th className="border p-2 text-left">Actions</th>
                         </tr>
                     </thead>
@@ -69,30 +47,52 @@ export default function WeeksList() {
                         {Array.isArray(weeks) && weeks.length > 0 ? (
                             weeks.map((week) => (
                                 <tr key={week?.id || 'temp-key'} className="border-t">
-                                    <td className="border p-2">{week.number}</td>
+                                    <td className="border p-2">{week.quarter}</td>
+                                    <td className="border p-2">{week.module_number}</td>
+                                    <td className="border p-2">{week.week_number}</td>
                                     <td className="border p-2">{week.theme}</td>
-                                    <td className="border p-2">{formattedDates[week.id] || 'Loading...'}</td>
-                                    <td className="border p-2 flex gap-2">
-                                        <button
-                                            onClick={() => openEditModal(week)}
-                                            className="bg-yellow-500 text-white px-2 py-1 rounded hover:bg-yellow-600"
-                                        >
-                                            Edit
-                                        </button>
-                                        <DeleteWeekButton weekId={week.id} fetchWeeks={fetchWeeks} />
+                                    {/* <td className="border p-2">{week.module_focus || '-'}</td> */}
+                                    {/* <td className="border p-2">
+                                        <div className="flex flex-wrap gap-1">
+                                            {week.skills?.map((skill, index) => (
+                                                <span key={index} className="bg-blue-100 text-blue-800 px-2 py-1 rounded text-sm">
+                                                    {skill}
+                                                </span>
+                                            )) || '-'}
+                                        </div>
+                                    </td>
+                                    <td className="border p-2">
+                                        <div className="flex flex-wrap gap-1">
+                                            {week.keywords?.map((keyword, index) => (
+                                                <span key={index} className="bg-gray-100 text-gray-800 px-2 py-1 rounded text-sm">
+                                                    {keyword}
+                                                </span>
+                                            )) || '-'}
+                                        </div>
+                                    </td> */}
+                                    <td className="border p-2">
+                                        <div className="flex gap-2">
+                                            <button
+                                                onClick={() => openEditModal(week)}
+                                                className="bg-yellow-500 text-white px-2 py-1 rounded hover:bg-yellow-600"
+                                            >
+                                                Edit
+                                            </button>
+                                            <DeleteWeekButton weekId={week.id} fetchWeeks={fetchWeeks} />
+                                        </div>
                                     </td>
                                 </tr>
                             ))
                         ) : (
                             <tr>
-                                <td colSpan="4" className="text-center p-4">No weeks found.</td>
+                                <td colSpan="8" className="text-center p-4">No weeks found.</td>
                             </tr>
                         )}
                     </tbody>
                 </table>
             </div>
 
-            {isEditModalOpen && (
+            {isEditModalOpen && selectedWeek && (
                 <EditWeekModal 
                     week={selectedWeek} 
                     setIsModalOpen={setIsEditModalOpen} 

@@ -34,9 +34,12 @@ export default function Week() {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [selectedWeek, setSelectedWeek] = useState(null);
-    const [theme, setTheme] = useState("");
-    const [dateStart, setDateStart] = useState("");
-    const [lessons, setLessons] = useState([]);
+    const [formData, setFormData] = useState({
+        theme: "",
+        module_number: "",
+        quarter: "",
+        lessons: []
+    });
     const [formattedDates, setFormattedDates] = useState({});
     const [isMounted, setIsMounted] = useState(false);
 
@@ -64,42 +67,33 @@ export default function Week() {
         setFormattedDates(dates);
     }, [weeks, isMounted]);
 
-    const addLesson = () => {
-        setLessons([...lessons, { title: "", timeRequired: "", activities: [] }]);
-    };
-
-    const updateLesson = (index, key, value) => {
-        const newLessons = [...lessons];
-        newLessons[index][key] = value;
-        setLessons(newLessons);
-    };
-
-    const addActivity = (lessonIndex) => {
-        const newLessons = [...lessons];
-        newLessons[lessonIndex].activities.push({
-            name: "",
-            objective: "",
-            keywords: "",
-            instructions: "",
-            timeRequired: "",
-            materials: [{ title: "", link: "" }]
-        });
-        setLessons(newLessons);
-    };
-
-    const updateActivity = (lessonIndex, activityIndex, key, value) => {
-        const newLessons = [...lessons];
-        newLessons[lessonIndex].activities[activityIndex][key] = value;
-        setLessons(newLessons);
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        setFormData(prev => ({
+            ...prev,
+            [name]: value
+        }));
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        await createWeek({ lessons, theme, date_start: dateStart });
-        setIsModalOpen(false);
-        setTheme("");
-        setDateStart("");
-        setLessons([]);
+        const dataToSubmit = {
+            ...formData,
+            module_number: parseInt(formData.module_number),
+            quarter: parseInt(formData.quarter),
+            lessons: []
+        };
+        await createWeek(dataToSubmit);
+        if (!error) {
+            setFormData({
+                theme: "",
+                module_number: "",
+                quarter: "",
+                lessons: []
+            });
+            setIsModalOpen(false);
+            fetchWeeks();
+        }
     };
 
     if (!isMounted) {
@@ -119,7 +113,6 @@ export default function Week() {
                 </button>
             </div>
 
-            
             {/* Create Week Modal */}
             {isModalOpen && (
                 <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
@@ -130,98 +123,40 @@ export default function Week() {
                                 <label className="block font-medium mb-1">Theme</label>
                                 <input
                                     type="text"
-                                    value={theme}
-                                    onChange={(e) => setTheme(e.target.value)}
+                                    name="theme"
+                                    value={formData.theme}
+                                    onChange={handleChange}
                                     className="w-full border rounded-lg p-2 focus:ring focus:ring-blue-300"
                                     required
                                 />
                             </div>
 
                             <div>
-                                <label className="block font-medium mb-1">Start Date</label>
+                                <label className="block font-medium mb-1">Module Number</label>
                                 <input
-                                    type="datetime-local"
-                                    value={dateStart}
-                                    onChange={(e) => setDateStart(e.target.value)}
+                                    type="number"
+                                    name="module_number"
+                                    value={formData.module_number}
+                                    onChange={handleChange}
                                     className="w-full border rounded-lg p-2 focus:ring focus:ring-blue-300"
                                     required
+                                    min="1"
                                 />
                             </div>
 
-                            {/* <h3 className="text-lg font-semibold">Lessons</h3>
-                            {lessons.map((lesson, lessonIndex) => (
-                                <div key={lessonIndex} className="border p-4 rounded-lg space-y-3">
-                                    <input
-                                        type="text"
-                                        placeholder="Lesson Name"
-                                        value={lesson.title}
-                                        onChange={(e) => updateLesson(lessonIndex, "title", e.target.value)}
-                                        className="w-full border rounded-lg p-2"
-                                        required
-                                    />
-                                    <input
-                                        type="number"
-                                        placeholder="Time Required (mins)"
-                                        value={lesson.timeRequired}
-                                        onChange={(e) => updateLesson(lessonIndex, "timeRequired", e.target.value)}
-                                        className="w-full border rounded-lg p-2"
-                                        required
-                                    />
-                                    <button
-                                        type="button"
-                                        onClick={() => addActivity(lessonIndex)}
-                                        className="bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600"
-                                    >
-                                        Add Activity
-                                    </button>
-
-                                    {lesson.activities.map((activity, activityIndex) => (
-                                        <div key={activityIndex} className="border p-3 mt-3 rounded-lg space-y-2">
-                                            <input
-                                                type="text"
-                                                placeholder="Activity Name"
-                                                value={activity.name}
-                                                onChange={(e) => updateActivity(lessonIndex, activityIndex, "name", e.target.value)}
-                                                className="w-full border rounded-lg p-2"
-                                            />
-                                            <textarea
-                                                placeholder="Objective"
-                                                value={activity.objective}
-                                                onChange={(e) => updateActivity(lessonIndex, activityIndex, "objective", e.target.value)}
-                                                className="w-full border rounded-lg p-2"
-                                            />
-                                            <input
-                                                type="text"
-                                                placeholder="Keywords (comma-separated)"
-                                                value={activity.keywords}
-                                                onChange={(e) => updateActivity(lessonIndex, activityIndex, "keywords", e.target.value)}
-                                                className="w-full border rounded-lg p-2"
-                                            />
-                                            <textarea
-                                                placeholder="Instructions"
-                                                value={activity.instructions}
-                                                onChange={(e) => updateActivity(lessonIndex, activityIndex, "instructions", e.target.value)}
-                                                className="w-full border rounded-lg p-2"
-                                            />
-                                            <input
-                                                type="number"
-                                                placeholder="Time Required (mins)"
-                                                value={activity.timeRequired}
-                                                onChange={(e) => updateActivity(lessonIndex, activityIndex, "timeRequired", e.target.value)}
-                                                className="w-full border rounded-lg p-2"
-                                            />
-                                        </div>
-                                    ))}
-                                </div>
-                            ))} */}
-{/* 
-                            <button
-                                type="button"
-                                onClick={addLesson}
-                                className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600"
-                            >
-                                Add Lesson
-                            </button> */}
+                            <div>
+                                <label className="block font-medium mb-1">Quarter</label>
+                                <input
+                                    type="number"
+                                    name="quarter"
+                                    value={formData.quarter}
+                                    onChange={handleChange}
+                                    className="w-full border rounded-lg p-2 focus:ring focus:ring-blue-300"
+                                    required
+                                    min="1"
+                                    max="4"
+                                />
+                            </div>
 
                             <div className="flex justify-end gap-2 mt-4">
                                 <button
@@ -255,3 +190,4 @@ export default function Week() {
         </div>
     );
 }
+
