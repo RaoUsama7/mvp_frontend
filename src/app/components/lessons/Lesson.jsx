@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import useLessons from "../../hooks/useLessons";
-import useWeeks from "../../hooks/useWeeks"; // Add this import
+import useWeeks from "../../hooks/useWeeks";
 import EditLessonModal from "./EditLessonModal";
 import DeleteLessonButton from "./DeleteLessonModal";
 
@@ -33,59 +33,100 @@ const ClientSideLesson = ({ lesson, onEdit, onDelete }) => (
 );
 
 export default function Lesson() {
-    // Add weeks hook
     const { weeks = [], fetchWeeks } = useWeeks();
     const { lessons = [], fetchLessons, createLesson, loading, error, success } = useLessons();
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [selectedLesson, setSelectedLesson] = useState(null);
-    const [title, setTitle] = useState("");
-    const [weekId, setWeekId] = useState("");
-    const [timeRequired, setTimeRequired] = useState("");
-    const [activities, setActivities] = useState([]);
-    const [isMounted, setIsMounted] = useState(false);
-    const [core, setCore] = useState(false); // Add core state
+    const [formData, setFormData] = useState({
+        title: "",
+        week: "",
+        core: false
+    });
 
-    // Add useEffect to fetch weeks when component mounts
+    // States for cascading dropdowns
+    const [selectedQuarter, setSelectedQuarter] = useState("");
+    const [selectedModule, setSelectedModule] = useState("");
+    const [quarters, setQuarters] = useState([]);
+    const [modules, setModules] = useState([]);
+    const [filteredWeeks, setFilteredWeeks] = useState([]);
+
     useEffect(() => {
         fetchWeeks();
     }, []);
 
+    // Extract unique quarters from weeks
     useEffect(() => {
-        setIsMounted(true);
-    }, []);
+        if (weeks.length > 0) {
+            const uniqueQuarters = [...new Set(weeks.map(week => week.quarter))].sort((a, b) => a - b);
+            setQuarters(uniqueQuarters);
+        }
+    }, [weeks]);
+
+    // Filter modules when quarter changes
+    useEffect(() => {
+        if (selectedQuarter && weeks.length > 0) {
+            const quarterWeeks = weeks.filter(week => week.quarter === parseInt(selectedQuarter));
+            const uniqueModules = [...new Set(quarterWeeks.map(week => week.module_number))].sort((a, b) => a - b);
+            setModules(uniqueModules);
+            setSelectedModule("");
+            setFormData(prev => ({ ...prev, week: "" }));
+        }
+    }, [selectedQuarter]);
+
+    // Filter weeks when module changes
+    useEffect(() => {
+        if (selectedQuarter && selectedModule && weeks.length > 0) {
+            const filtered = weeks.filter(week => 
+                week.quarter === parseInt(selectedQuarter) && 
+                week.module_number === parseInt(selectedModule)
+            );
+            setFilteredWeeks(filtered);
+        }
+    }, [selectedQuarter, selectedModule, weeks]);
+
+    const handleChange = (e) => {
+        const { name, value, type, checked } = e.target;
+        setFormData(prev => ({
+            ...prev,
+            [name]: type === 'checkbox' ? checked : value
+        }));
+    };
+
+    const handleQuarterChange = (e) => {
+        setSelectedQuarter(e.target.value);
+    };
+
+    const handleModuleChange = (e) => {
+        setSelectedModule(e.target.value);
+    };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-
-        if (!title || !weekId || !timeRequired) {
-            alert("Title, week, and time required are mandatory fields");
+        if (!formData.title || !formData.week) {
+            alert("Please fill in all required fields");
             return;
         }
 
         const lessonData = {
-            title,
-            week: weekId, // Changed from weekId to week to match API
+            title: formData.title,
+            week: formData.week,
             activities: [],
-            time_required: parseInt(timeRequired), // Changed from timeRequired to time_required
-            core
+            core: formData.core
         };
 
-        console.log('Submitting lesson:', lessonData); // For debugging
-
         await createLesson(lessonData);
-        setIsModalOpen(false);
-        // Reset form
-        setTitle("");
-        setWeekId("");
-        setTimeRequired("");
-        setActivities([]);
-        setCore(false);
+        if (!error) {
+            setIsModalOpen(false);
+            setFormData({
+                title: "",
+                week: "",
+                core: false
+            });
+            setSelectedQuarter("");
+            setSelectedModule("");
+        }
     };
-
-    if (!isMounted) {
-        return <div className="flex flex-col items-center bg-gray-100 p-6">Loading...</div>;
-    }
 
     return (
         <div className="flex flex-col items-center bg-gray-100 p-6">
@@ -108,39 +149,69 @@ export default function Lesson() {
                                 <label className="block font-medium mb-1">Title</label>
                                 <input
                                     type="text"
-                                    value={title}
-                                    onChange={(e) => setTitle(e.target.value)}
+                                    name="title"
+                                    value={formData.title}
+                                    onChange={handleChange}
                                     className="w-full border rounded-lg p-2"
                                     required
                                 />
                             </div>
+
                             <div>
-                                <label className="block font-medium mb-1">Select Week</label>
+                                <label className="block font-medium mb-1">Quarter</label>
                                 <select
-                                    value={weekId}
-                                    onChange={(e) => setWeekId(e.target.value)}
+                                    value={selectedQuarter}
+                                    onChange={handleQuarterChange}
                                     className="w-full border rounded-lg p-2"
                                     required
                                 >
-                                    <option value="">Select a week...</option>
-                                    {weeks.map((week) => (
-                                        <option key={week.id} value={week.id}>
-                                            Week {week.number}: {week.theme}
+                                    <option value="">Select Quarter...</option>
+                                    {quarters.map((quarter) => (
+                                        <option key={quarter} value={quarter}>
+                                            Quarter {quarter}
                                         </option>
                                     ))}
                                 </select>
                             </div>
-                            <div>
-                                <label className="block font-medium mb-1">Time Required (minutes)</label>
-                                <input
-                                    type="number"
-                                    value={timeRequired}
-                                    onChange={(e) => setTimeRequired(e.target.value)}
-                                    className="w-full border rounded-lg p-2"
-                                    required
-                                    min="1"
-                                />
-                            </div>
+
+                            {selectedQuarter && (
+                                <div>
+                                    <label className="block font-medium mb-1">Module</label>
+                                    <select
+                                        value={selectedModule}
+                                        onChange={handleModuleChange}
+                                        className="w-full border rounded-lg p-2"
+                                        required
+                                    >
+                                        <option value="">Select Module...</option>
+                                        {modules.map((module) => (
+                                            <option key={module} value={module}>
+                                                Module {module}
+                                            </option>
+                                        ))}
+                                    </select>
+                                </div>
+                            )}
+
+                            {selectedModule && (
+                                <div>
+                                    <label className="block font-medium mb-1">Week</label>
+                                    <select
+                                        name="week"
+                                        value={formData.week}
+                                        onChange={handleChange}
+                                        className="w-full border rounded-lg p-2"
+                                        required
+                                    >
+                                        <option value="">Select Week...</option>
+                                        {filteredWeeks.map((week) => (
+                                            <option key={week.id} value={week.id}>
+                                                Week {week.week_number}: {week.theme}
+                                            </option>
+                                        ))}
+                                    </select>
+                                </div>
+                            )}
 
                             <div>
                                 <label className="block font-medium mb-1">Lesson Type</label>
@@ -150,8 +221,8 @@ export default function Lesson() {
                                             type="radio"
                                             id="core-true"
                                             name="core"
-                                            checked={core === true}
-                                            onChange={() => setCore(true)}
+                                            checked={formData.core === true}
+                                            onChange={() => setFormData(prev => ({ ...prev, core: true }))}
                                             className="mr-2"
                                         />
                                         <label htmlFor="core-true">Core Lesson</label>
@@ -161,15 +232,15 @@ export default function Lesson() {
                                             type="radio"
                                             id="core-false"
                                             name="core"
-                                            checked={core === false}
-                                            onChange={() => setCore(false)}
+                                            checked={formData.core === false}
+                                            onChange={() => setFormData(prev => ({ ...prev, core: false }))}
                                             className="mr-2"
                                         />
                                         <label htmlFor="core-false">Optional Lesson</label>
                                     </div>
                                 </div>
                             </div>
-                            
+
                             <div className="flex justify-end gap-2">
                                 <button
                                     type="button"
@@ -190,20 +261,6 @@ export default function Lesson() {
                     </div>
                 </div>
             )}
-
-            {/* <div className="w-full max-w-4xl">
-                {Array.isArray(lessons) && lessons.map((lesson) => (
-                    <ClientSideLesson
-                        key={lesson?.id}
-                        lesson={lesson}
-                        onEdit={(l) => {
-                            setSelectedLesson(l);
-                            setIsEditModalOpen(true);
-                        }}
-                        onDelete={fetchLessons}
-                    />
-                ))}
-            </div> */}
 
             {isEditModalOpen && selectedLesson && (
                 <EditLessonModal

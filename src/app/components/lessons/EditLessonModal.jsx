@@ -7,7 +7,6 @@ export default function EditLessonModal({ lesson, setIsModalOpen, fetchLessons }
     const { updateLesson } = useLessons();
     const [formData, setFormData] = useState({
         title: lesson.title,
-        time_required: lesson.timeRequired,
         core: lesson.core,
         activities: lesson.activities || []
     });
@@ -31,7 +30,6 @@ export default function EditLessonModal({ lesson, setIsModalOpen, fetchLessons }
             // Match the exact format that works in Postman
             const requestData = {
                 title: formData.title,
-                time_required: parseInt(formData.time_required),
                 core: formData.core
             };
             
@@ -64,17 +62,6 @@ export default function EditLessonModal({ lesson, setIsModalOpen, fetchLessons }
                             type="text"
                             name="title"
                             value={formData.title}
-                            onChange={handleChange}
-                            className="w-full border rounded-lg p-2"
-                            required
-                        />
-                    </div>
-                    <div>
-                        <label className="block font-medium mb-1">Time Required (minutes)</label>
-                        <input
-                            type="number"
-                            name="time_required"
-                            value={formData.time_required}
                             onChange={handleChange}
                             className="w-full border rounded-lg p-2"
                             required

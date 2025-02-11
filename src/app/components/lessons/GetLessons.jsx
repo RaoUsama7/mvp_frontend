@@ -40,8 +40,9 @@ export default function LessonsList() {
                     <thead>
                         <tr className="bg-gray-200">
                             <th className="border p-2 text-left">Title</th>
-                            <th className="border p-2 text-left">Week Info</th>
-                            <th className="border p-2 text-left">Time (mins)</th>
+                            <th className="border p-2 text-left">Module Number</th>
+                            <th className="border p-2 text-left">Week Number</th>
+                            <th className="border p-2 text-left">Week Theme</th>
                             <th className="border p-2 text-left">Core</th>
                             <th className="border p-2 text-left">Activities</th>
                             <th className="border p-2 text-left">Actions</th>
@@ -52,23 +53,16 @@ export default function LessonsList() {
                             lessons.map((lesson) => (
                                 <tr key={lesson.id} className="border-t">
                                     <td className="border p-2">{lesson.title}</td>
-                                    <td className="border p-2">
-                                        {lesson.week ? (
-                                            <>
-                                                Week {lesson.week.number}: {lesson.week.theme}
-                                            </>
-                                        ) : (
-                                            'No week assigned'
-                                        )}
-                                    </td>
-                                    <td className="border p-2">{lesson.timeRequired}</td>
+                                    <td className="border p-2">{lesson.week?.module_number}</td>
+                                    <td className="border p-2">{lesson.week?.week_number}</td>
+                                    <td className="border p-2">{lesson.week?.theme}</td>
                                     <td className="border p-2">
                                         <span className={`px-2 py-1 rounded ${lesson.core ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}`}>
                                             {lesson.core ? 'Yes' : 'No'}
                                         </span>
                                     </td>
                                     <td className="border p-2">
-                                        {lesson.activities.length} activities
+                                        {lesson.activities?.length || 0} activities
                                     </td>
                                     <td className="border p-2">
                                         <div className="flex gap-2">
@@ -90,7 +84,7 @@ export default function LessonsList() {
                             ))
                         ) : (
                             <tr>
-                                <td colSpan="6" className="text-center p-4">No lessons found.</td>
+                                <td colSpan="7" className="text-center p-4">No lessons found.</td>
                             </tr>
                         )}
                     </tbody>
