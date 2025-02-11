@@ -15,7 +15,7 @@ export default function LessonsList() {
     };
 
     const handleDelete = async (lessonId) => {
-        if (confirm("Are you sure you want to delete this lesson?")) {
+        if (confirm("Are you sure you want to delete this lesson? Deleting this lesson would delete all activities associated with it")) {
             await deleteLesson(lessonId);
             fetchLessons();
         }
