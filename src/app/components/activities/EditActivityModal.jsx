@@ -1,10 +1,15 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import useActivities from "../../hooks/useActivities";
+import useLessons from "../../hooks/useLessons";
+import useWeeks from "../../hooks/useWeeks";
 
 export default function EditActivityModal({ activity, setIsModalOpen, fetchActivities }) {
     const { updateActivity } = useActivities();
+    const { lessons, fetchLessons } = useLessons();
+    const { weeks, fetchWeeks } = useWeeks();
+    
     const [formData, setFormData] = useState({
         name: activity.name || "",
         meaning: activity.meaning || "",
@@ -12,10 +17,54 @@ export default function EditActivityModal({ activity, setIsModalOpen, fetchActiv
         description: activity.description || "",
         instructions: activity.instructions || "",
         timeRequired: activity.timeRequired || "",
-        materials: activity.materials || ""
+        materials: activity.materials || "",
+        lessonId: activity.lessonId || activity.lesson?.id || ""
     });
+
+    // States for cascading dropdowns
+    const [selectedModule, setSelectedModule] = useState("");
+    const [selectedWeek, setSelectedWeek] = useState("");
+    const [modules, setModules] = useState([]);
+    const [filteredWeeks, setFilteredWeeks] = useState([]);
+    const [filteredLessons, setFilteredLessons] = useState([]);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [error, setError] = useState(null);
+
+    useEffect(() => {
+        fetchWeeks();
+        fetchLessons();
+    }, []);
+
+    // Extract unique modules from weeks
+    useEffect(() => {
+        if (weeks.length > 0) {
+            const uniqueModules = [...new Set(weeks.map(week => week.module_number))].sort((a, b) => a - b);
+            setModules(uniqueModules);
+            
+            // Set initial module and week based on current activity's lesson
+            const currentLesson = lessons.find(l => l.id === formData.lessonId);
+            if (currentLesson?.week) {
+                setSelectedModule(currentLesson.week.module_number.toString());
+                setSelectedWeek(currentLesson.week.id);
+            }
+        }
+    }, [weeks, lessons]);
+
+    // Filter weeks when module changes
+    useEffect(() => {
+        if (selectedModule && weeks.length > 0) {
+            const filtered = weeks.filter(week => week.module_number === parseInt(selectedModule));
+            setFilteredWeeks(filtered);
+        }
+    }, [selectedModule, weeks]);
+
+    // Filter lessons when week changes
+    useEffect(() => {
+        if (selectedWeek && lessons.length > 0) {
+            const filtered = lessons.filter(lesson => lesson.weekId === selectedWeek);
+            setFilteredLessons(filtered);
+        }
+    }, [selectedWeek, lessons]);
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -23,6 +72,17 @@ export default function EditActivityModal({ activity, setIsModalOpen, fetchActiv
             ...prev,
             [name]: value
         }));
+    };
+
+    const handleModuleChange = (e) => {
+        setSelectedModule(e.target.value);
+        setSelectedWeek("");
+        setFormData(prev => ({ ...prev, lessonId: "" }));
+    };
+
+    const handleWeekChange = (e) => {
+        setSelectedWeek(e.target.value);
+        setFormData(prev => ({ ...prev, lessonId: "" }));
     };
 
     const handleSubmit = async (e) => {
@@ -38,7 +98,8 @@ export default function EditActivityModal({ activity, setIsModalOpen, fetchActiv
                 description: formData.description.trim(),
                 instructions: formData.instructions.trim(),
                 timeRequired: parseInt(formData.timeRequired),
-                materials: formData.materials.trim()
+                materials: formData.materials.trim(),
+                lessonId: formData.lessonId
             };
             
             const result = await updateActivity(activity.id, requestData);
@@ -75,6 +136,62 @@ export default function EditActivityModal({ activity, setIsModalOpen, fetchActiv
                             required
                         />
                     </div>
+
+                    <div>
+                        <label className="block font-medium mb-1">Module</label>
+                        <select
+                            value={selectedModule}
+                            onChange={handleModuleChange}
+                            className="w-full border rounded-lg p-2"
+                            required
+                        >
+                            <option value="">Select Module...</option>
+                            {modules.map((module) => (
+                                <option key={module} value={module}>
+                                    Module {module}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+
+                    {selectedModule && (
+                        <div>
+                            <label className="block font-medium mb-1">Week</label>
+                            <select
+                                value={selectedWeek}
+                                onChange={handleWeekChange}
+                                className="w-full border rounded-lg p-2"
+                                required
+                            >
+                                <option value="">Select Week...</option>
+                                {filteredWeeks.map((week) => (
+                                    <option key={week.id} value={week.id}>
+                                        Week {week.week_number}: {week.theme}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+                    )}
+
+                    {selectedWeek && (
+                        <div>
+                            <label className="block font-medium mb-1">Lesson</label>
+                            <select
+                                name="lessonId"
+                                value={formData.lessonId}
+                                onChange={handleChange}
+                                className="w-full border rounded-lg p-2"
+                                required
+                            >
+                                <option value="">Select Lesson...</option>
+                                {filteredLessons.map((lesson) => (
+                                    <option key={lesson.id} value={lesson.id}>
+                                        {lesson.title} {lesson.core ? '(Core)' : '(Optional)'}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+                    )}
 
                     <div>
                         <label className="block font-medium mb-1">Meaning</label>

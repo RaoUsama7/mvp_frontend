@@ -95,10 +95,10 @@ const useLessons = () => {
     setSuccess(null);
 
     try {
-        // Send only the fields that work in Postman
+        // Make sure we're sending the exact format the API expects
         const requestBody = {
             title: updatedData.title,
-            time_required: updatedData.time_required,
+            weekId: updatedData.weekId, // Changed from week to weekId
             core: updatedData.core
         };
 
