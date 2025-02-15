@@ -1,46 +1,53 @@
-'use client'; // Required for Next.js 13+ client components
+"use client"; // Required for Next.js 13+ client components
 
-import { useState } from 'react';
-import axios from 'axios';
-import Image from 'next/image';
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useEffect, useState } from "react";
+import axios from "axios";
+import Image from "next/image";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 const Signup = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [name, setName] = useState('');
-  const [error, setError] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [name, setName] = useState("");
+  const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
+    setError("");
     setLoading(true);
 
     if (password !== confirmPassword) {
-      setError('Passwords do not match');
+      setError("Passwords do not match");
       setLoading(false);
       return;
     }
 
     try {
-      const response = await axios.post('https://www.talkietotz.com/auth/register', {
-        email,
-        password,
-        name,
-      });
-      console.log('Signup successful:', response.data);
-      alert('Account created successfully! Redirecting to login...');
-      router.push('/login');
+      const response = await axios.post(
+        "https://www.talkietotz.com/auth/register",
+        {
+          email,
+          password,
+          name,
+        }
+      );
+      console.log("Signup successful:", response.data);
+      alert("Account created successfully! Redirecting to login...");
+      router.push("/login");
     } catch (err: any) {
-      setError(err.response?.data?.message || 'Signup failed');
+      setError(err.response?.data?.message || "Signup failed");
     } finally {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    router.push("/login");
+  }, []);
 
   return (
     <section className="bg-gray-50 dark:bg-gray-900">
@@ -134,11 +141,11 @@ const Signup = () => {
                 className="w-full text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
                 disabled={loading}
               >
-                {loading ? 'Signing up...' : 'Sign up'}
+                {loading ? "Signing up..." : "Sign up"}
               </button>
 
               <p className="text-sm font-light text-gray-500 dark:text-gray-400">
-                Already have an account?{' '}
+                Already have an account?{" "}
                 <Link
                   href="/login"
                   className="font-medium text-blue-600 hover:underline dark:text-blue-500"

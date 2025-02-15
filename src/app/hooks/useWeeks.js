@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from "react";
 
 const useWeeks = () => {
   const [weeks, setWeeks] = useState([]);
@@ -12,51 +12,50 @@ const useWeeks = () => {
     totalPages: 1,
   });
 
-  const token =
-    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2N2ExM2IxN2IwMDgxZDI1MjRlNGRlM2MiLCJlbWFpbCI6InJhb3J2cDIwQGdtYWlsLmNvbSIsImlhdCI6MTczODk0MzcxMywiZXhwIjoxNzM5NTQ4NTEzfQ.R4yC3IDUOydD_YiVv9JPSgCC6MB9wX4sAGf-zL-_yNw';
+  const token = localStorage.getItem("token");
 
-const fetchWeeks = async (page = 1) => {
-  setLoading(true);
-  setError(null);
-  try {
-    const response = await fetch(
-      `https://www.talkietotz.com/weeks/all`,
-      {
-        method: 'GET',
+  const fetchWeeks = async (page = 1) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await fetch(`https://www.talkietotz.com/weeks/all`, {
+        method: "GET",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-      }
-    );
+      });
 
-    if (!response.ok) throw new Error('Failed to fetch weeks');
+      if (!response.ok) throw new Error("Failed to fetch weeks");
 
-    const data = await response.json();
-    console.log('Fetched Data:', data); // For debugging
-    setWeeks(data); // Set the entire array directly
-  } catch (err) {
-    setError(err.message);
-  } finally {
-    setLoading(false);
-  }
-};
-
+      const data = await response.json();
+      console.log("Fetched Data:", data); // For debugging
+      setWeeks(data); // Set the entire array directly
+    } catch (err) {
+      setError(err.message);
+      console.log("FETCHING WEEKS", err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const getWeekById = async (weekId) => {
     setLoading(true);
     setError(null);
 
     try {
-      const response = await fetch(`https://www.talkietotz.com/weeks/${weekId}`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const response = await fetch(
+        `https://www.talkietotz.com/weeks/${weekId}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
-      if (!response.ok) throw new Error('Failed to fetch week');
+      if (!response.ok) throw new Error("Failed to fetch week");
 
       const data = await response.json();
       setWeek(data);
@@ -73,19 +72,19 @@ const fetchWeeks = async (page = 1) => {
     setSuccess(null);
 
     try {
-      const response = await fetch('https://www.talkietotz.com/weeks', {
-        method: 'POST',
+      const response = await fetch("https://www.talkietotz.com/weeks", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(weekData),
       });
 
-      if (!response.ok) throw new Error('Failed to create week');
+      if (!response.ok) throw new Error("Failed to create week");
 
       const data = await response.json();
-      setSuccess('Week created successfully!');
+      setSuccess("Week created successfully!");
       fetchWeeks(pagination.currentPage);
       return data;
     } catch (err) {
@@ -101,19 +100,22 @@ const fetchWeeks = async (page = 1) => {
     setSuccess(null);
 
     try {
-      const response = await fetch(`https://www.talkietotz.com/weeks/${weekId}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(updatedData),
-      });
+      const response = await fetch(
+        `https://www.talkietotz.com/weeks/${weekId}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify(updatedData),
+        }
+      );
 
-      if (!response.ok) throw new Error('Failed to update week');
+      if (!response.ok) throw new Error("Failed to update week");
 
       const data = await response.json();
-      setSuccess('Week updated successfully!');
+      setSuccess("Week updated successfully!");
       fetchWeeks(pagination.currentPage);
       return data;
     } catch (err) {
@@ -127,19 +129,22 @@ const fetchWeeks = async (page = 1) => {
     setLoading(true);
     setError(null);
     setSuccess(null);
-    console.log('weekId:', weekId); // For debugging
+    console.log("weekId:", weekId); // For debugging
     try {
-      const response = await fetch(`https://www.talkietotz.com/weeks/${weekId}`, {
-        method: 'DELETE',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const response = await fetch(
+        `https://www.talkietotz.com/weeks/${weekId}`,
+        {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
-      if (!response.ok) throw new Error('Failed to delete week');
+      if (!response.ok) throw new Error("Failed to delete week");
 
-      setSuccess('Week deleted successfully!');
+      setSuccess("Week deleted successfully!");
       fetchWeeks(pagination.currentPage);
     } catch (err) {
       setError(err.message);

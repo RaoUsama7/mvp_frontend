@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from "react";
 
 const useLessons = () => {
   const [lessons, setLessons] = useState([]);
@@ -7,23 +7,22 @@ const useLessons = () => {
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
 
-  const token =
-    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2N2ExM2IxN2IwMDgxZDI1MjRlNGRlM2MiLCJlbWFpbCI6InJhb3J2cDIwQGdtYWlsLmNvbSIsImlhdCI6MTczODk0MzcxMywiZXhwIjoxNzM5NTQ4NTEzfQ.R4yC3IDUOydD_YiVv9JPSgCC6MB9wX4sAGf-zL-_yNw';
+  const token = localStorage.getItem("token");
 
   const fetchLessons = async () => {
     setLoading(true);
     setError(null);
 
     try {
-      const response = await fetch('https://www.talkietotz.com/lessons', {
-        method: 'GET',
+      const response = await fetch("https://www.talkietotz.com/lessons", {
+        method: "GET",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
       });
 
-      if (!response.ok) throw new Error('Failed to fetch lessons');
+      if (!response.ok) throw new Error("Failed to fetch lessons");
 
       const data = await response.json();
       setLessons(data);
@@ -42,15 +41,15 @@ const useLessons = () => {
       const response = await fetch(
         `https://www.talkietotz.com/lessons/${lessonId}`,
         {
-          method: 'GET',
+          method: "GET",
           headers: {
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
           },
         }
       );
 
-      if (!response.ok) throw new Error('Failed to fetch lesson');
+      if (!response.ok) throw new Error("Failed to fetch lesson");
 
       const data = await response.json();
       setLesson(data);
@@ -67,19 +66,19 @@ const useLessons = () => {
     setSuccess(null);
 
     try {
-      const response = await fetch('https://www.talkietotz.com/lessons', {
-        method: 'POST',
+      const response = await fetch("https://www.talkietotz.com/lessons", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(lessonData),
       });
 
-      if (!response.ok) throw new Error('Failed to create lesson');
+      if (!response.ok) throw new Error("Failed to create lesson");
 
       const data = await response.json();
-      setSuccess('Lesson created successfully!');
+      setSuccess("Lesson created successfully!");
       fetchLessons();
       return data;
     } catch (err) {
@@ -95,38 +94,38 @@ const useLessons = () => {
     setSuccess(null);
 
     try {
-        // Make sure we're sending the exact format the API expects
-        const requestBody = {
-            title: updatedData.title,
-            weekId: updatedData.weekId, // Changed from week to weekId
-            core: updatedData.core
-        };
+      // Make sure we're sending the exact format the API expects
+      const requestBody = {
+        title: updatedData.title,
+        weekId: updatedData.weekId, // Changed from week to weekId
+        core: updatedData.core,
+      };
 
-        const response = await fetch(
-            `https://www.talkietotz.com/lessons/${lessonId}`,
-            {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                    Authorization: `Bearer ${token}`,
-                },
-                body: JSON.stringify(requestBody),
-            }
-        );
-
-        if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(errorData.message || 'Failed to update lesson');
+      const response = await fetch(
+        `https://www.talkietotz.com/lessons/${lessonId}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify(requestBody),
         }
+      );
 
-        const data = await response.json();
-        setSuccess('Lesson updated successfully!');
-        return data;
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Failed to update lesson");
+      }
+
+      const data = await response.json();
+      setSuccess("Lesson updated successfully!");
+      return data;
     } catch (err) {
-        setError(err.message);
-        throw err;
+      setError(err.message);
+      throw err;
     } finally {
-        setLoading(false);
+      setLoading(false);
     }
   };
 
@@ -139,17 +138,17 @@ const useLessons = () => {
       const response = await fetch(
         `https://www.talkietotz.com/lessons/${lessonId}`,
         {
-          method: 'DELETE',
+          method: "DELETE",
           headers: {
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
           },
         }
       );
 
-      if (!response.ok) throw new Error('Failed to delete lesson');
+      if (!response.ok) throw new Error("Failed to delete lesson");
 
-      setSuccess('Lesson deleted successfully!');
+      setSuccess("Lesson deleted successfully!");
       fetchLessons();
     } catch (err) {
       setError(err.message);
