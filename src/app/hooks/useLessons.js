@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { getLocalStorage } from "../utils/localStorage";
 
 const useLessons = () => {
   const [lessons, setLessons] = useState([]);
@@ -6,10 +7,14 @@ const useLessons = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
+  const [token, setToken] = useState(null);
 
-  const token = localStorage.getItem("token");
+  useEffect(() => {
+    setToken(getLocalStorage("token"));
+  }, []);
 
   const fetchLessons = async () => {
+    if (!token) return;
     setLoading(true);
     setError(null);
 
@@ -158,8 +163,10 @@ const useLessons = () => {
   };
 
   useEffect(() => {
-    fetchLessons();
-  }, []);
+    if (token) {
+      fetchLessons();
+    }
+  }, [token]);
 
   return {
     lessons,

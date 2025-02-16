@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { getLocalStorage } from "../utils/localStorage";
 
 const useWeeks = () => {
   const [weeks, setWeeks] = useState([]);
@@ -11,13 +12,25 @@ const useWeeks = () => {
     currentPage: 1,
     totalPages: 1,
   });
+  const [token, setToken] = useState(null);
 
-  const token = localStorage.getItem("token");
+  // First effect to set token
+  useEffect(() => {
+    const storedToken = getLocalStorage("token");
+    setToken(storedToken);
+  }, []);
 
-  const fetchWeeks = async (page = 1) => {
+  const fetchWeeks = async () => {
+    if (!token) {
+      console.log("No token available");
+      return;
+    }
+
     setLoading(true);
     setError(null);
+
     try {
+      console.log("Fetching weeks with token:", token); // Debug log
       const response = await fetch(`https://www.talkietotz.com/weeks/all`, {
         method: "GET",
         headers: {
@@ -26,18 +39,28 @@ const useWeeks = () => {
         },
       });
 
-      if (!response.ok) throw new Error("Failed to fetch weeks");
+      if (!response.ok) {
+        throw new Error("Failed to fetch weeks");
+      }
 
       const data = await response.json();
-      console.log("Fetched Data:", data); // For debugging
-      setWeeks(data); // Set the entire array directly
+      console.log("Fetched Weeks Data:", data); // Debug log
+      setWeeks(data);
     } catch (err) {
+      console.error("Error fetching weeks:", err); // Debug log
       setError(err.message);
-      console.log("FETCHING WEEKS", err);
     } finally {
       setLoading(false);
     }
   };
+
+  // Second effect to fetch data when token is available
+  useEffect(() => {
+    if (token) {
+      console.log("Token available, fetching weeks"); // Debug log
+      fetchWeeks();
+    }
+  }, [token]);
 
   const getWeekById = async (weekId) => {
     setLoading(true);
@@ -85,7 +108,7 @@ const useWeeks = () => {
 
       const data = await response.json();
       setSuccess("Week created successfully!");
-      fetchWeeks(pagination.currentPage);
+      fetchWeeks();
       return data;
     } catch (err) {
       setError(err.message);
@@ -116,7 +139,7 @@ const useWeeks = () => {
 
       const data = await response.json();
       setSuccess("Week updated successfully!");
-      fetchWeeks(pagination.currentPage);
+      fetchWeeks();
       return data;
     } catch (err) {
       setError(err.message);
@@ -145,17 +168,13 @@ const useWeeks = () => {
       if (!response.ok) throw new Error("Failed to delete week");
 
       setSuccess("Week deleted successfully!");
-      fetchWeeks(pagination.currentPage);
+      fetchWeeks();
     } catch (err) {
       setError(err.message);
     } finally {
       setLoading(false);
     }
   };
-
-  useEffect(() => {
-    fetchWeeks();
-  }, []);
 
   return {
     weeks,

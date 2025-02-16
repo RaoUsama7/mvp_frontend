@@ -5,6 +5,7 @@ import axios from "axios";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { setLocalStorage } from "../../utils/localStorage";
 
 const Login = () => {
   const router = useRouter();
@@ -28,13 +29,8 @@ const Login = () => {
       );
       const token = response.data.token;
 
-      // Store token in localStorage
-      localStorage.setItem("token", token);
-
-      // Store token in cookie (expires in 7 days)
-      document.cookie = `token=${token}; path=/; max-age=${
-        7 * 24 * 60 * 60
-      }; SameSite=Strict`;
+      // Use the utility function
+      setLocalStorage("token", token);
 
       // Redirect to home page
       router.push("/");

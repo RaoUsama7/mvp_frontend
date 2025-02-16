@@ -1,9 +1,9 @@
 "use client";
 
-import CreateWeek from '../components/weeks/CreateWeek';
-import WeeksList from '../components/weeks/GetWeeks';
 import Week from '../components/weeks/Week';
+import WeeksList from '../components/weeks/GetWeeks';
 import { useRouter } from 'next/navigation';
+import withAuth from '../components/auth/withAuth';
 
 const Weeks = () => {
     const router = useRouter();
@@ -16,12 +16,10 @@ const Weeks = () => {
             >
                 Back to Dashboard
             </button>
-            {/* <CreateWeek />
-             */}
             <Week />
             <WeeksList />
         </div>
     );
 };
 
-export default Weeks;
+export default withAuth(Weeks);

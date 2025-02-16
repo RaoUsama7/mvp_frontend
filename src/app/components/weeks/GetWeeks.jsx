@@ -1,9 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import useWeeks from "../../hooks/useWeeks";
 import EditWeekModal from "./EditWeekModal";
 import DeleteWeekButton from "./DeleteWeekModal";
+import LoadingSpinner from "../common/LoadingSpinner";
 
 export default function WeeksList() {
     const { weeks, loading, error, fetchWeeks } = useWeeks();
@@ -14,6 +15,18 @@ export default function WeeksList() {
         setSelectedWeek(week);
         setIsEditModalOpen(true);
     };
+
+    if (loading) {
+        return <LoadingSpinner />;
+    }
+
+    if (error) {
+        return <div className="text-red-500 text-center p-4">{error}</div>;
+    }
+
+    if (!weeks || weeks.length === 0) {
+        return <div className="text-center p-4">No weeks found.</div>;
+    }
 
     return (
         <div className="flex flex-col items-center bg-gray-100 p-6 w-full">
@@ -26,8 +39,6 @@ export default function WeeksList() {
                     {loading ? "Loading..." : "Refresh Weeks"}
                 </button>
             </div>
-
-            {error && <p className="text-red-500">{error}</p>}
 
             <div className="w-full max-w-4xl bg-white p-4 rounded-lg shadow-lg overflow-x-auto">
                 <table className="w-full border-collapse">

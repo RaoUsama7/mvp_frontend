@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import Sidebar from './components/common/Sidebar';
 import Dashboard from './components/dashboard';
-
+import withAuth from './components/auth/withAuth';
 
 const Home = () => {
   const [activeComponent, setActiveComponent] = useState('Dashboard');
@@ -20,7 +20,7 @@ const Home = () => {
       case 'Projects':
         return <ProjectManagement />;
       case 'Profile':
-        return <Profile/>
+        return <Profile />;
       default:
         return <div>Select an option from the sidebar.</div>;
     }
@@ -44,4 +44,4 @@ const Home = () => {
   );
 };
 
-export default Home;
+export default withAuth(Home);

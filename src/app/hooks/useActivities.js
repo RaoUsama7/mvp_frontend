@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { getLocalStorage } from "../utils/localStorage";
 
 const useActivities = () => {
   const [activities, setActivities] = useState([]);
@@ -6,10 +7,14 @@ const useActivities = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
+  const [token, setToken] = useState(null);
 
-  const token = localStorage.getItem("token");
+  useEffect(() => {
+    setToken(getLocalStorage("token"));
+  }, []);
 
   const fetchActivities = async () => {
+    if (!token) return;
     setLoading(true);
     setError(null);
 
@@ -32,6 +37,12 @@ const useActivities = () => {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    if (token) {
+      fetchActivities();
+    }
+  }, [token]);
 
   const getActivityById = async (activityId) => {
     setLoading(true);
@@ -146,10 +157,6 @@ const useActivities = () => {
       setLoading(false);
     }
   };
-
-  useEffect(() => {
-    fetchActivities();
-  }, []);
 
   return {
     activities,

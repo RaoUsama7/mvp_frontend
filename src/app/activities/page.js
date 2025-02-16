@@ -3,6 +3,7 @@
 import CreateActivity from '../components/activities/CreateActivity';
 import GetActivities from '../components/activities/GetActivities';
 import { useRouter } from 'next/navigation';
+import withAuth from '../components/auth/withAuth';
 
 const ActivitiesPage = () => {
     const router = useRouter();
@@ -21,4 +22,4 @@ const ActivitiesPage = () => {
     );
 };
 
-export default ActivitiesPage;
+export default withAuth(ActivitiesPage);
