@@ -17,7 +17,7 @@ const Sidebar = ({ setActiveComponent, activeComponent, isCollapsed, toggleSideb
     { name: 'Weeks', icon: FiFolder },
     { name: 'Lessons', icon: FiFolder },
     { name: 'Activities', icon: FiFolder },
-    // { name: 'Settings', icon: FiSettings },
+    { name: 'Notifications', icon: FiFolder },
     // { name: 'Logout', icon: FiLogOut },
   ];
 
@@ -34,6 +34,11 @@ const Sidebar = ({ setActiveComponent, activeComponent, isCollapsed, toggleSideb
     }
     if (itemName === 'Activities') {
       router.push('/activities');
+    } else {
+      setActiveComponent(itemName);
+    }
+    if (itemName === 'Notifications') {
+      router.push('/notifications');
     } else {
       setActiveComponent(itemName);
     }
