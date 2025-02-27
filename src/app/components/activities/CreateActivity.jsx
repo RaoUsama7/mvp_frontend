@@ -281,7 +281,7 @@ const AddActivityButton = () => {
                                 </div>
 
                                 <div>
-                                    <label className="block font-medium mb-1">Section</label>
+                                    <label className="block font-medium mb-1">Level Up Section</label>
                                     <input
                                         type="text"
                                         name="section"
@@ -289,7 +289,7 @@ const AddActivityButton = () => {
                                         onChange={handleChange}
                                         className="w-full border rounded-lg p-2"
                                         required
-                                        placeholder="Enter section name"
+                                        placeholder="Enter level up text here"
                                     />
                                 </div>
 
