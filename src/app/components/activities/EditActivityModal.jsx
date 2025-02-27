@@ -18,7 +18,8 @@ export default function EditActivityModal({ activity, setIsModalOpen, fetchActiv
         instructions: activity.instructions || "",
         timeRequired: activity.timeRequired || "",
         materials: activity.materials || "",
-        lessonId: activity.lessonId || activity.lesson?.id || ""
+        lessonId: activity.lessonId || activity.lesson?.id || "",
+        section: activity.section || ""
     });
 
     // States for cascading dropdowns
@@ -99,7 +100,8 @@ export default function EditActivityModal({ activity, setIsModalOpen, fetchActiv
                 instructions: formData.instructions.trim(),
                 timeRequired: parseInt(formData.timeRequired),
                 materials: formData.materials.trim(),
-                lessonId: formData.lessonId
+                lessonId: formData.lessonId,
+                section: formData.section.trim()
             };
             
             const result = await updateActivity(activity.id, requestData);
@@ -192,6 +194,19 @@ export default function EditActivityModal({ activity, setIsModalOpen, fetchActiv
                             </select>
                         </div>
                     )}
+
+                    <div>
+                        <label className="block font-medium mb-1">Section</label>
+                        <input
+                            type="text"
+                            name="section"
+                            value={formData.section}
+                            onChange={handleChange}
+                            className="w-full border rounded-lg p-2"
+                            required
+                            placeholder="Enter section name"
+                        />
+                    </div>
 
                     <div>
                         <label className="block font-medium mb-1">Meaning</label>

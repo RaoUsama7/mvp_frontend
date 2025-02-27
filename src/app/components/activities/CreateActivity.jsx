@@ -20,7 +20,8 @@ const AddActivityButton = () => {
         instructions: "",
         timeRequired: "",
         materials: "",
-        lessonId: ""
+        lessonId: "",
+        section: ""
     });
 
     // States for cascading dropdowns
@@ -87,7 +88,8 @@ const AddActivityButton = () => {
             instructions: formData.instructions.trim(),
             timeRequired: parseInt(formData.timeRequired),
             materials: formData.materials.trim(),
-            lessonId: formData.lessonId
+            lessonId: formData.lessonId,
+            section: formData.section.trim()
         };
 
         try {
@@ -101,7 +103,8 @@ const AddActivityButton = () => {
                     instructions: "",
                     timeRequired: "",
                     materials: "",
-                    lessonId: ""
+                    lessonId: "",
+                    section: ""
                 });
                 setSelectedModule("");
                 setSelectedWeek("");
@@ -274,6 +277,19 @@ const AddActivityButton = () => {
                                         onChange={handleChange}
                                         className="w-full border rounded-lg p-2"
                                         required
+                                    />
+                                </div>
+
+                                <div>
+                                    <label className="block font-medium mb-1">Section</label>
+                                    <input
+                                        type="text"
+                                        name="section"
+                                        value={formData.section}
+                                        onChange={handleChange}
+                                        className="w-full border rounded-lg p-2"
+                                        required
+                                        placeholder="Enter section name"
                                     />
                                 </div>
 
