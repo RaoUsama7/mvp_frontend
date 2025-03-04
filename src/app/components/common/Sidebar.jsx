@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { FiMenu, FiHome, FiSettings, FiFolder, FiLogOut } from 'react-icons/fi';
+import { removeLocalStorage } from '../../utils/localStorage';
 
 // interface SidebarProps {
 //   setActiveComponent: (component: string) => void;
@@ -11,6 +12,13 @@ import { FiMenu, FiHome, FiSettings, FiFolder, FiLogOut } from 'react-icons/fi';
 
 const Sidebar = ({ setActiveComponent, activeComponent, isCollapsed, toggleSidebar }) => {
   const router = useRouter();
+
+  const handleLogout = () => {
+    // Remove token from local storage
+    removeLocalStorage('token');
+    // Redirect to login page
+    router.push('/login');
+  };
 
   const menuItems = [
     { name: 'Dashboard', icon: FiHome },
@@ -77,6 +85,14 @@ const Sidebar = ({ setActiveComponent, activeComponent, isCollapsed, toggleSideb
             {!isCollapsed && <span>{item.name}</span>}
           </button>
         ))}
+        {/* Logout Button */}
+        <button
+          onClick={handleLogout}
+          className={`flex items-center ${isCollapsed ? 'justify-center' : 'space-x-4'} w-full px-4 py-2 text-gray-800 rounded-md transition-all hover:bg-gray-100`}
+        >
+          <FiLogOut size={20} />
+          {!isCollapsed && <span>Logout</span>}
+        </button>
       </nav>
     </div>
   );
